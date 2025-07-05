@@ -33,7 +33,7 @@ struct ContentView: View {
                     ], spacing: 50) {
                         ForEach($sounds) { $sound in
                             SoundButton(sound: $sound) {
-                                withAnimation(.spring()) {
+                                withAnimation(.easeOut(duration: 0.25)) {
                                     sounds.removeAll { $0.id == sound.id }
                                 }
                             }
