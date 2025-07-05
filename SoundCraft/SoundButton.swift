@@ -41,44 +41,32 @@ struct SoundButton: View {
                     HStack {
                         Spacer(minLength: 0)
 
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: 0,
-                            bottomLeadingRadius: 0,
-                            bottomTrailingRadius: buttonHeight / 2,
-                            topTrailingRadius: buttonHeight / 2
-                        )
-                        .fill(Color.red.opacity(0.8))
-                        .frame(width: buttonWidth * deleteProgress, height: buttonHeight)
-                        .overlay(
-                            // Trash icon appears when threshold is reached
-                            Group {
-                                if hasReachedDeleteThreshold {
-                                    Image(systemName: "trash.fill")
-                                        .font(.system(size: 18, weight: .medium))
-                                        .foregroundColor(.white)
-                                        .scaleEffect(hasReachedDeleteThreshold ? 1.0 : 0.8)
-                                        .animation(.interactiveSpring(response: 0.15), value: hasReachedDeleteThreshold)
+                        Rectangle()
+                            .fill(Color.red.opacity(0.8))
+                            .frame(width: buttonWidth * deleteProgress, height: buttonHeight)
+                            .overlay(
+                                // Trash icon appears when threshold is reached
+                                Group {
+                                    if hasReachedDeleteThreshold {
+                                        Image(systemName: "trash.fill")
+                                            .font(.system(size: 18, weight: .medium))
+                                            .foregroundColor(.white)
+                                            .scaleEffect(hasReachedDeleteThreshold ? 1.0 : 0.8)
+                                            .animation(.interactiveSpring(response: 0.15), value: hasReachedDeleteThreshold)
+                                    }
                                 }
-                            }
-                        )
-                        .animation(.interactiveSpring(response: 0.15, dampingFraction: 1.0), value: deleteProgress)
+                            )
+                            .animation(.interactiveSpring(response: 0.15, dampingFraction: 1.0), value: deleteProgress)
                     }
                     .clipShape(RoundedRectangle(cornerRadius: buttonHeight / 2))
                 }
 
                 // Volume fill overlay
                 HStack {
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: buttonHeight / 2,
-                        bottomLeadingRadius: buttonHeight / 2,
-                        bottomTrailingRadius: 0,
-                        topTrailingRadius: 0
-                    )
-                    .fill(fillColor)
-                    .frame(width: (buttonWidth * sound.volume) * (1 - deleteProgress), height: buttonHeight)
-                    .animation(.interactiveSpring(response: 0.15, dampingFraction: 1.0), value: sound.volume)
-                    .animation(.interactiveSpring(response: 0.15, dampingFraction: 1.0), value: deleteProgress)
-                    .animation(.easeOut(duration: 0.2), value: isDragging)
+                    Rectangle()
+                        .fill(fillColor)
+                        .frame(width: buttonWidth * sound.volume, height: buttonHeight)
+                        .animation(.interactiveSpring(response: 0.15, dampingFraction: 1.0), value: sound.volume)
 
                     Spacer(minLength: 0)
                 }
@@ -109,6 +97,7 @@ struct SoundButton: View {
         }
         .frame(width: buttonWidth, height: buttonHeight)
         .contentShape(RoundedRectangle(cornerRadius: buttonHeight / 2))
+        //        .clipShape(RoundedRectangle(cornerRadius: buttonHeight / 2))
         .transition(.opacity.animation(.easeOut(duration: 0.25)))
         .gesture(
             DragGesture(minimumDistance: 0)
@@ -138,6 +127,8 @@ struct SoundButton: View {
 
                     if newVolume <= 0 && sound.volume > 0 {
                         zeroVolumePosition = value.location.x
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                        impactFeedback.impactOccurred()
                     }
 
                     // If we're dragging left past zero volume, start delete gesture
@@ -217,19 +208,13 @@ struct SoundButton: View {
     private func performDeletion() {
         isDeleting = true
 
-        // Animation sequence: expand delete button, then shrink and delete
+        // Animation sequence: expand delete button then  delete
         withAnimation(.easeOut(duration: 0.2)) {
             deleteProgress = 1.0
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            withAnimation(.easeOut(duration: 0.3)) {
-                deleteProgress = 0.0
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                onDelete()
-            }
+            onDelete()
         }
     }
 
