@@ -14,7 +14,7 @@ struct ContentView: View {
         Sound(name: "Forest", icon: "leaf.fill"),
         Sound(name: "Fire", icon: "flame.fill")
     ]
-    @State private var isPlaying = true
+    @State private var isPlaying = false
     @State private var showingSoundPicker = false
     @State private var showingTimer = false
 
@@ -24,8 +24,8 @@ struct ContentView: View {
             Color(hex: "d0e6f7")
                 .ignoresSafeArea()
 
+            // Sound Grid
             VStack(spacing: 0) {
-                // Sound Grid
                 ScrollView {
                     LazyVGrid(columns: [
                         GridItem(.flexible(), spacing: 0),
@@ -39,7 +39,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 30)
+                    .padding(.horizontal, 15)
                     .padding(.top, 60)
                     .padding(.bottom, 120)
                 }
@@ -56,6 +56,7 @@ struct ContentView: View {
                     Button(action: { showingTimer.toggle() }) {
                         Image(systemName: "timer")
                             .frame(width: 60, height: 60)
+                            .font(.system(size: 24))
                             .foregroundStyle(.foreground)
                             .glassEffect()
                     }
@@ -65,6 +66,7 @@ struct ContentView: View {
                     Button(action: { showingSoundPicker.toggle() }) {
                         Image(systemName: "plus")
                             .frame(width: 120, height: 60)
+                            .font(.system(size: 24))
                             .foregroundStyle(.foreground)
                             .glassEffect()
                     }
@@ -74,6 +76,7 @@ struct ContentView: View {
                     Button(action: { isPlaying.toggle() }) {
                         Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                             .frame(width: 60, height: 60)
+                            .font(.system(size: 24))
                             .foregroundStyle(.foreground)
                             .glassEffect()
                     }
